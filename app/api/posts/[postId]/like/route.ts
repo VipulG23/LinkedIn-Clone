@@ -4,11 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { postId: string } }
+  context: { params: { postId: string } }
 ) {
   try {
     await connectDB();
-    const post = await Post.findById(params.postId);
+    const post = await Post.findById(context.params.postId);
     if (!post) return NextResponse.json({ error: "Post not found." });
 
     return NextResponse.json(post.likes);
@@ -22,12 +22,12 @@ export async function GET(
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { postId: string } }
+  context: { params: { postId: string } }
 ) {
   try {
     await connectDB();
     const userId = await req.json();
-    const post = await Post.findById(params.postId);
+    const post = await Post.findById(context.params.postId);
     if (!post) return NextResponse.json({ error: "Post not found." });
 
     await post.updateOne({ $addToSet: { likes: userId } });
